@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- 集合的封装 -->
+		<script>
+			function Set() {
+				// 属性
+				this.items = {};
+				// 方法
+				// 1.向集合添加一个新的项
+				Set.prototype.add = function (value) {
+					// 判断当前集合是否已经包含了该元素
+					if (this.has(value)) return false;
+					// 将元素添加到集合中
+					this.items[value] = value;
+					return true;
+				};
+				// 2.从集合移除一个值
+				Set.prototype.remove = function (value) {
+					// 1判断该集合是否包含该元素
+					if (!this.has(value)) return false;
+					// 2将元素从属性中删除
+					delete this.items[value];
+					return true;
+				};
+				// 3.如果值在集合中，则返回true，否则返回false
+				Set.prototype.has = function (value) {
+					return this.items.hasOwnProperty(value);
+				};
+				// 4.移除集合的所有项
+				Set.prototype.clear = function () {
+					this.items = {};
+				};
+				// 5.返回集合所包含元素的数量。与数组的length类似
+				Set.prototype.size = function () {
+					return Object.keys(this.items).length;
+				};
+				// 6.返回一个包含集合所有值的数组
+				Set.prototype.values = function () {
+					return Object.values(this.items);
+				};
+
+				// 集合间的操作
+				// 并集
+				Set.prototype.union = function (otherSet) {
+					// this:集合A
+					// otherSet:集合B
+					// 1创建新集合
+					let unionSet = new Set();
+					// 2将集合A中所有元素加入到新集合中
+					let values = this.values();
+					for (let i = 0; i < values.length; i++) {
+						unionSet.add(values[i]);
+					}
+					// 3取出集合B中所有元素，判断是否重复后加入到新集合中
+					values = otherSet.values();
+					for (let i = 0; i < values.length; i++) {
+						unionSet.add(values[i]);
+					}
+					return unionSet;
+				};
+				// 交集
+				Set.prototype.intersection = function (otherSet) {
+					// this:集合A
+					// otherSet:集合B
+					// 1创建新集合
+					let intersectionSet = new Set();
+					// 2取出集合A里全部元素
+					let values = this.values();
+					// 3判断元素是否在集合B中存在,存在则加入新集合
+					for (let i = 0; i < values.length; i++) {
+						let items = values[i];
+						if (otherSet.has(items)) {
+							intersectionSet.add(items);
+						}
+					}
+					// 	4输出新集合
+					return intersectionSet;
+				};
+				// 差集
+				Set.prototype.difference = function (otherSet) {
+					// this:集合A
+					// otherSet:集合B
+					// 1创建新集合
+					let differenceSet = new Set();
+					// 2取出集合A里全部元素
+					let values = this.values();
+					// 3判断元素是否在集合B中存在,若不存在则加入新集合
+					for (let i = 0; i < values.length; i++) {
+						let items = values[i];
+						if (!otherSet.has(items)) {
+							differenceSet.add(items);
+						}
+					}
+					// 	4输出新集合
+					return differenceSet;
+				};
+				// 子集
+				Set.prototype.subset = function (otherSet) {
+					// this:集合A
+					// otherSet:集合B
+					// 1获取A集合的所有元素
+					let values = this.values();
+					// 2判断所有元素是否都同时在集合B中存在，若有有一个元素不存在，则返回false
+					for (let i = 0; i < values.length; i++) {
+						let items = values[i];
+						if (!otherSet.has(items)) return false;
+					}
+					return true;
+				};
+			}
+			// 	let set = new Set();
+			// set.add('罗诗韵');
+			// 	alert(set.has('罗诗韵'));
+			// 	alert(set.has('关欣'));
+			// 	set.add('罗诗韵');
+			// 	// 没有解决字符串数字和数字的问题
+			// 	set.add('1');
+			// 	set.add(1);
+			// 	alert(set.size());
+			// 	alert(set.values());
+			// 	console.log(set.values());
+			let set1 = new Set();
+			let set2 = new Set();
+			let set3 = new Set();
+			set1.add('罗诗韵');
+			set1.add('关欣');
+			set1.add('蓝家松');
+			set2.add('罗诗韵');
+			set2.add('雷洋婷');
+			set2.add('李玥');
+			alert(set1.union(set2).values());
+			alert(set1.intersection(set2).values());
+			alert(set1.difference(set2).values());
+			alert(set1.subset(set2));
+			alert(set3.subset(set2));
+		</script>
+	</body>
+</html>

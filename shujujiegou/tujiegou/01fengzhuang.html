@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- 无向图结构封装 -->
+		<!-- 引入字典封装文件 -->
+		<script src="../zidian/02fengzhuang.js"></script>
+		<!-- 引入队列结构 -->
+		<script src="../duilie/putongduilie/duilie.js"></script>
+		<script>
+			function Graph() {
+				// 属性：顶点(数组)/边(字典)
+				this.vertexes = []; //顶点
+				this.edges = new Dictionay(); //边
+				// 方法
+				// 1.添加方法
+				// 1.1.顶点
+				Graph.prototype.addVertex = function (v) {
+					this.vertexes.push(v);
+					this.edges.set(v, []);
+				};
+				// 1.2.边
+				Graph.prototype.addEdge = function (v1, v2) {
+					this.edges.get(v1).push(v2);
+					this.edges.get(v2).push(v1);
+				};
+				// 2将图按邻接表的字符串方式输出
+				Graph.prototype.toString = function () {
+					// 1定义字符串保存结果
+					let resultString = '';
+					// 2遍历所有的顶点，及顶点对应的边
+					for (let i = 0; i < this.vertexes.length; i++) {
+						resultString += this.vertexes[i] + '->';
+						let vEdges = this.edges.get(this.vertexes[i]);
+						for (let j = 0; j < vEdges.length; j++) {
+							resultString += vEdges[j] + ' ';
+						}
+						resultString += '\n';
+					}
+					return resultString;
+				};
+				// 初始化颜色
+				Graph.prototype.initalizeColor = function () {
+					let colors = [];
+					for (let i = 0; i < this.vertexes.length; i++) {
+						colors[this.vertexes[i]] = 'white';
+					}
+					return colors;
+				};
+				// 3.广度优先搜索(Breadth-First Search)
+				Graph.prototype.breadthFirstSearch = function (initv, handler) {
+					// 1初始化颜色
+					let colors = this.initalizeColor();
+					// 2创建队列
+					let queue = new Queue();
+					// 3将进入顶点加入到队列中
+					queue.enqueue(initv);
+					// 4循环从队列中取出元素
+					while (!queue.isEmpty()) {
+						// 4.1从队列中取出一个顶点
+						let v = queue.dequeue();
+						// 4.2获取和顶点相邻的另外顶点
+						let vList = this.edges.get(v);
+						// 4.3将v的颜色设置成灰色
+						colors[v] = 'gray';
+						// 4.4遍历所有相邻的顶点，并且加到队列中
+						for (let i = 0; i < vList.length; i++) {
+							let e = vList[i];
+							if (colors[e] == 'white') {
+								colors[e] = 'gray';
+								queue.enqueue(e);
+							}
+						}
+						// 4.5访问顶点
+						handler(v);
+						// 4.6将顶点设置为黑色
+						colors[v] = 'black';
+					}
+				};
+				// 4.深度优先搜索(Depth-First Search)
+				Graph.prototype.depthFirstSearch = function (initv, handler) {
+					// 1初始化颜色
+					let colors = this.initalizeColor();
+					// 2从某个顶点开始依次递归访问
+					this.depthFirstSearchVisit(initv, colors, handler);
+				};
+				// 递归函数
+				Graph.prototype.depthFirstSearchVisit = function (v, colors, handler) {
+					// 1将颜色设置为灰色
+					colors[v] = 'gray';
+					// 2处理v顶点
+					handler(v);
+					// 3访问v相连的其他顶点
+					let vList = this.edges.get(v);
+					for (let i = 0; i < vList.length; i++) {
+						let e = vList[i];
+						if (colors[e] == 'white') {
+							this.depthFirstSearchVisit(e, colors, handler);
+						}
+					}
+					// 4将v设置成黑色
+					colors[v] = 'black';
+				};
+			}
+			// 测试
+			// 创建图结构
+			let graph = new Graph();
+			// 添加顶点
+			let myVertexes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+			for (let i = 0; i < myVertexes.length; i++) {
+				graph.addVertex(myVertexes[i]);
+			}
+			// 添加边
+			graph.addEdge('A', 'B');
+			graph.addEdge('A', 'C');
+			graph.addEdge('A', 'D');
+			graph.addEdge('C', 'D');
+			graph.addEdge('C', 'G');
+			graph.addEdge('D', 'G');
+			graph.addEdge('D', 'H');
+			graph.addEdge('B', 'E');
+			graph.addEdge('B', 'F');
+			graph.addEdge('E', 'I');
+			// toSting方法
+			alert(graph.toString());
+			// bfs遍历
+			let result = '';
+			// graph.breadthFirstSearch(graph.vertexes[0], function (v) {
+			// 	result += v + ' ';
+			// });
+			graph.breadthFirstSearch(graph.vertexes[8], v => {
+				result += v + ' ';
+			});
+			alert(result);
+			// console.log(graph);
+			// dfs遍历
+			result = '';
+			// graph.depthFirstSearch(graph.vertexes[0], function (v) {
+			// 	result += v + ' ';
+			// });
+			graph.depthFirstSearch(graph.vertexes[0], v => {
+				result += v + ' ';
+			});
+			alert(result);
+		</script>
+	</body>
+</html>

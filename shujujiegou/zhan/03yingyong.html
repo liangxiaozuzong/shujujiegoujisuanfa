@@ -1,0 +1,71 @@
+<!-- 栈的应用 -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			function Stack() {
+				// 栈中属性
+				this.items = [];
+
+				// 栈的相关操作
+				// 1.将元素压入栈
+				// this.push=function(){
+				// 这种方法相当于给某一个对象实例添加方法
+				// }
+				Stack.prototype.push = function (element) {
+					this.items.push(element);
+				};
+				// 2.从栈中取出元素
+				Stack.prototype.pop = function () {
+					return this.items.pop();
+				};
+				// 3.查看栈顶元素
+				Stack.prototype.peek = function () {
+					return this.items[this.items.length - 1];
+				};
+				// 4.判断栈是否为空
+				Stack.prototype.isEmpty = function () {
+					return this.items.length == 0;
+				};
+				// 5.获取栈中元素的个数
+				Stack.prototype.size = function () {
+					return this.items.length;
+				};
+				// 6.toString方法
+				Stack.prototype.toString = function () {
+					let resultString = '';
+					for (let i = 0; i < this.items.length; i++) {
+						resultString += this.items[i] + ' ';
+					}
+					return resultString;
+				};
+			}
+			// 十进制转二进制
+			function decTobin(decNumber) {
+				// 1.定义栈对象
+				let stack = new Stack();
+				// 2.循环操作
+				while (decNumber > 0) {
+					// 2.1获取余数，放入栈中
+					stack.push(decNumber % 2);
+					// 2.2获取整除后的结果，作为下一次运算的数字
+					decNumber = Math.floor(decNumber / 2);
+				}
+				// 3.从栈中取出0和1
+				let binaryString = '';
+				while (stack.size()) {
+					binaryString += stack.pop();
+				}
+				return binaryString;
+			}
+			alert(decTobin(2));
+			alert(decTobin(100));
+		</script>
+	</body>
+</html>

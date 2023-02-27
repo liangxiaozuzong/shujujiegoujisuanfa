@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- 二叉搜索树封装(Binary Search Tree) -->
+		<script>
+			function BinarySearchTree() {
+				// 封装内部类：节点
+				function Node(key, value) {
+					this.key = key;
+					this.left = null;
+					this.right = null;
+					this.value = value;
+				}
+				// 属性
+				this.root = null;
+				// 方法
+				// 1.向树中插入一个新的键
+				BinarySearchTree.prototype.insert = function (key, value) {
+					// 1根据key创建节点
+					let newNode = new Node(key, value);
+					// 2判断根节点是否有值
+					if (this.root == null) {
+						this.root = newNode;
+					} else {
+						this.insertNode(this.root, newNode);
+					}
+				};
+				// 递归函数
+				BinarySearchTree.prototype.insertNode = function (node, newNode) {
+					if (newNode.key < node.key) {
+						// 向左查找
+						if (node.left == null) {
+							node.left = newNode;
+						} else {
+							this.insertNode(node.left, newNode);
+						}
+					} else {
+						// 向右查找
+						if (node.right == null) {
+							node.right = newNode;
+						} else {
+							this.insertNode(node.right, newNode);
+						}
+					}
+				};
+				// 2.在树中查找一个键，如果节点存在，则返回true，如果不存在，则返回false
+				BinarySearchTree.prototype.search = function (key) {
+					// 1获取根节点
+					let node = this.root;
+					if (node == null) {
+						return false;
+					}
+					while (node) {
+						if (key > node.key) {
+							node = node.right;
+						} else if (key < node.key) {
+							node = node.left;
+						} else {
+							return true;
+						}
+					}
+					return false;
+				};
+				// 3.通过中序遍历方式遍历所有节点
+				BinarySearchTree.prototype.inOrderTraverse = function (handler) {
+					this.inOrderTraverseNode(this.root, handler);
+				};
+				// 递归函数
+				BinarySearchTree.prototype.inOrderTraverseNode = function (node, handler) {
+					if (node !== null) {
+						// 1查找左子树中的节点
+						this.inOrderTraverseNode(node.left, handler);
+						// 2处理节点
+						handler(node.key);
+						// 3查找右子树中的节点
+						this.inOrderTraverseNode(node.right, handler);
+					}
+				};
+				// 4.通过先序遍历方式遍历所有节点
+				BinarySearchTree.prototype.preOrderTraverse = function (handler) {
+					this.preOrderTraverseNode(this.root, handler);
+				};
+				// 递归函数
+				BinarySearchTree.prototype.preOrderTraverseNode = function (node, handler) {
+					if (node !== null) {
+						// 1处理经过的节点
+						handler(node.key);
+						// 2查找经过节点的左子节点
+						this.preOrderTraverseNode(node.left, handler);
+						// 2查找经过节点的右子节点
+						this.preOrderTraverseNode(node.right, handler);
+					}
+				};
+				// 5.通过后序遍历方式遍历所有节点
+				BinarySearchTree.prototype.pastOrderTraverse = function (handler) {
+					this.pastOrderTraverseNode(this.root, handler);
+				};
+				// 递归函数
+				BinarySearchTree.prototype.pastOrderTraverseNode = function (node, handler) {
+					if (node !== null) {
+						// 1查找左子树中的节点
+						this.pastOrderTraverseNode(node.left, handler);
+						// 2查找右子树中的节点
+						this.pastOrderTraverseNode(node.right, handler);
+						// 3处理经过的节点
+						handler(node.key);
+					}
+				};
+				// 6.返回树中最小的值/键
+				BinarySearchTree.prototype.min = function () {
+					// 1获取根节点
+					let node = this.root;
+					// 2判断根节点是否为空，若为空直接返回null
+					if (node == null) {
+						return null;
+					}
+					// 3依次向左查找，直到最左边
+					while (node.left) {
+						node = node.left;
+					}
+					return node.value;
+				};
+				// 7.返回树中最大的值/键
+				BinarySearchTree.prototype.max = function () {
+					// 1获取根节点
+					let node = this.root;
+					// 2判断根节点是否为空，若为空直接返回null
+					if (node == null) {
+						return null;
+					}
+					// 3依次向右查找，直到最左边
+					while (node.right) {
+						node = node.right;
+					}
+					return node.value;
+				};
+				// 8.从树中移除某个键
+				BinarySearchTree.prototype.remove = function (key) {
+					// 1查找要删除的节点
+					// 1.1定义变量保存信息,并判断root是否为空，若为空，则返回false
+					let current = this.root;
+					let parent = null;
+					let isLeftChild = true;
+					if (current == null) return false;
+					// 1.2开始寻找节点
+					while (current.key !== key) {
+						parent = current;
+						if (key > current.key) {
+							isLeftChild = false;
+							current = current.right;
+						} else {
+							isLeftChild = true;
+							current = current.left;
+						}
+						// 没有找到该节点，直接返回false
+						if (current == null) return false;
+					}
+					// 2根据对应的情况删除节点
+					// 2.1删除叶子节点
+					if (current.left == null && current.right == null) {
+						if (current == this.root) {
+							this.root = null;
+						} else {
+							if (isLeftChild) {
+								parent.left = null;
+							} else {
+								parent.right = null;
+							}
+						}
+					}
+					// 2.2删除有一个子节点
+					else if (current.left == null) {
+						if (current == this.root) {
+							this.root = current.right;
+						} else if (isLeftChild) {
+							parent.left = current.right;
+						} else {
+							parent.right = current.right;
+						}
+					}
+					//
+					else if (current.right == null) {
+						if (current == this.root) {
+							this.root = current.left;
+						} else if (isLeftChild) {
+							parent.left = current.left;
+						} else {
+							parent.right = current.left;
+						}
+					}
+					// 2.3删除有两个子节点
+					else {
+						// 1获取后继节点
+						let successor = this.getSuccessor(current);
+						// 2判断是否是根节点
+						if (current == this.root) {
+							this.root = successor;
+						} else if (isLeftChild) {
+							parent.left = successor;
+						} else {
+							parent.right = successor;
+						}
+						// 3删除节点
+						successor.left = current.left;
+						return true;
+					}
+				};
+				// 找后继节点的方法
+				BinarySearchTree.prototype.getSuccessor = function (delNode) {
+					// 定义变量，保存找到的后继
+					// 向右寻找继承
+					let successor = delNode;
+					let current = delNode.right;
+					let successorParent = delNode;
+					while (current) {
+						successorParent = successor;
+						successor = current;
+						current = current.left;
+					}
+					// 判断寻找到的后继节点是否直接是delNode的right节点
+					if (successor != delNode.right) {
+						successorParent.left = successor.right;
+						successor.right = delNode.right;
+					}
+
+					// 向左寻找继承
+					// let successor = delNode;
+					// let current = delNode.left;
+					// let successorParent = delNode;
+					// while (current) {
+					// 	successorParent = successor;
+					// 	successor = current;
+					// 	current = current.right;
+					// }
+					// if (successor !== delNode.right) {
+					// 	successorParent.right = successor.right;
+					// 	successor.right = delNode.right;
+					// }
+					return successor;
+				};
+			}
+			// 测试
+			let bst = new BinarySearchTree();
+			bst.insert(11, '罗诗韵');
+			bst.insert(7, '蓝家松');
+			bst.insert(15, '雷洋婷');
+			bst.insert(5, '高洁');
+			bst.insert(3, '王恩静');
+			bst.insert(9, '李玥');
+			bst.insert(8, '关欣');
+			bst.insert(10, '吴木兰');
+			bst.insert(13, '吴越雪');
+			bst.insert(12, '杨飞');
+			bst.insert(14, '卢佳欣');
+			bst.insert(20, '黎宪桃');
+			bst.insert(18, '张欣悦');
+			bst.insert(25, '张雪迎');
+			bst.insert(6, '王艺融');
+			alert(bst.remove(26));
+			alert(bst.remove(7));
+
+			console.log(bst);
+			// 测试遍历
+			// let resultString = '';
+			// bst.preOrderTraverse(function (key) {
+			// 	resultString += key + ' ';
+			// });
+			// alert(resultString);
+			// resultString = '';
+			// bst.inOrderTraverse(key => {
+			// 	resultString += key + ' ';
+			// });
+			// alert(resultString);
+			// resultString = '';
+			// bst.pastOrderTraverse(key => {
+			// 	resultString += key + ' ';
+			// });
+			// alert(resultString);
+			// alert(bst.max());
+			// alert(bst.min());
+			// alert(bst.search(11));
+			// alert(bst.search(26));
+			// alert(bst.search(10));
+			// alert(bst.search(25));
+			// alert(bst.search(0));
+		</script>
+	</body>
+</html>

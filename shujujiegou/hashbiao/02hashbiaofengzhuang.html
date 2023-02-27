@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!--哈希表实现 -->
+		<script>
+			// 1.封装哈希表类
+			function HashTable() {
+				// 属性
+				this.storage = []; //数组：存放元素
+				this.count = 0; //记录元素存放个数
+				// loadFactor>0.75时扩容，loadFactor<0.25时缩小，
+				this.limit = 7; //记录数组长度
+				// 方法
+				// 1.hash函数
+				HashTable.prototype.hashFunc = function (str, size) {
+					// 1定义变量
+					let hashCode = 0;
+					// 2霍纳法则计算hashCode的值
+					for (let i = 0; i < str.length; i++) {
+						// charCodeAt()函数获取到字符串对应的Unicode编码
+						// str.charCodeAt(i);
+						hashCode = 37 * hashCode + str.charCodeAt(i);
+					}
+					// 3取余操作
+					let index = hashCode % size;
+					return index;
+				};
+				// 2.插入&修改操作
+				HashTable.prototype.put = function (key, value) {
+					// 1根据key获取索引值——目的：将数据插入到对应的位置
+					let index = this.hashFunc(key, this.limit);
+					// 2根据索引值取出桶(bucket)
+					let bucket = this.storage[index];
+					// 3判断该bucket是否为null
+					if (bucket == null) {
+						// 3.1如果同不存在，创建桶，并且放置在该索引的位置
+						bucket = [];
+						this.storage[index] = bucket;
+					}
+					// 4判断新增还是修改原来的值——遍历桶——如果有值则修改，无值则添加
+					for (let i = 0; i < bucket.length; i++) {
+						let tuple = bucket[i];
+						if (tuple[0] == key) {
+							tuple[1] = value;
+							break;
+						}
+					}
+					// 5进行新增操作
+					bucket.push([key, value]);
+					this.count += 1;
+					// 6判断是否需要扩容
+					if (this.count > this.limit * 0.75) {
+						let newLimit = this.limit * 2;
+						let newPrime = this.getPrime(newLimit);
+						this.resize(newPrime);
+					}
+				};
+				// 3.获取操作
+				HashTable.prototype.get = function (key) {
+					// 1根据key获取索引值——目的：找到数据插入到对应的位置
+					let index = this.hashFunc(key, this.limit);
+					// 2根据index找到对的bucket
+					let bucket = this.storage[index];
+					应;
+					// 3判断bucket是否为null
+					if (bucket == null) {
+						// 3.1为null直接返回null
+						return null;
+					} else {
+						// 3.2遍历bucke
+						for (let i = 0; i < bucket.length; i++) {
+							let tuple = bucket[i];
+							// 4判断bucket中的tuple中的key是否等于传入的key
+							if (tuple[0] == key) {
+								// 4.1若相等则输出对应的value
+								return tuple[1];
+							}
+						}
+						// 5遍历完依旧没有找到对应的key，则返回null
+						return null;
+					}
+				};
+				// 4.删除操作
+				HashTable.prototype.remove = function (key) {
+					// 1根据key获取索引值——目的：找到数据插入到对应的位置
+					let index = this.hashFunc(key, this.limit);
+					// 2根据index找到对的bucket
+					let bucket = this.storage[index];
+					// 3判断bucket是否为null
+					if (bucket == null) {
+						// 3.1为null直接返回null
+						return null;
+					} else {
+						// 3.2遍历bucke
+						for (let i = 0; i < bucket.length; i++) {
+							let tuple = bucket[i];
+							// 4判断bucket中的tuple中的key是否等于传入的key
+							if (tuple[0] == key) {
+								bucket.splice(i, 1);
+								this.count -= 1;
+								// 5判断是否需要缩小容量
+								if (this.limit > 7 && this.count < this.limit * 0.25) {
+									let newLimit = Math.floor(this.limit / 2);
+									let newPrime = this.getPrime(newLimit);
+									this.resize(newPrime);
+								}
+								// 4.1若相等则删除输出对应的value
+								return tuple[1];
+							}
+						}
+						// 5遍历完依旧没有找到对应的key，则返回null
+						return null;
+					}
+				};
+				// 5.判断哈希表是否为空
+				HashTable.prototype.isEmpty = function () {
+					return this.count == 0;
+				};
+				// 6.获取哈希表元素个数
+				HashTable.prototype.size = function () {
+					return this.count;
+				};
+				// 7.哈希表扩容/缩容
+				HashTable.prototype.resize = function (newLimit) {
+					// 1保存旧的数组内容
+					let oldStorage = this.storage;
+					// 2重置所有的属性
+					this.storage = [];
+					this.count = 0;
+					this.limit = newLimit;
+					// 3遍历osdStorage中所有的bucket
+					for (let i = 0; i < oldStorage.length; i++) {
+						// 3.1取出对应的bucket
+						let bucket = oldStorage[i];
+						// 3.2判断bucket是否为null
+						if (bucket == null) {
+							// 3.3无数据，直接开始下一次循环
+							continue;
+						} else {
+							// 3.4取出数据，重新插入
+							for (let j = 0; j < bucket.length; j++) {
+								let tuple = bucket[j];
+								this.put(tuple[0], tuple[1]);
+							}
+						}
+					}
+				};
+				HashTable.prototype.isPrime = function (num) {
+					let temp = parseInt(Math.sqrt(num));
+					for (let i = 2; i <= temp; i++) {
+						if (num % i === 0) {
+							return false;
+						}
+					}
+					return true;
+				};
+				HashTable.prototype.getPrime = function (num) {
+					while (!this.isPrime(num)) {
+						num += 1;
+					}
+					return num;
+				};
+				// HashTable.prototype.remove = function (key) {};
+			}
+			// 测试
+			let hashtable = new HashTable();
+			hashtable.put('罗诗韵', '复旦大学');
+			hashtable.put('蓝家松', '暨南大学');
+			hashtable.put('雷洋婷', '天津工业大学');
+			hashtable.put('黎宪桃', '天津工业大学');
+			hashtable.put('李玥', '江苏大学');
+			hashtable.put('关欣', '天津工业大学');
+			hashtable.put('高洁', '北京师范大学');
+			console.log(hashtable);
+			// hashtable.remove('李玥');
+			// hashtable.remove('关欣');
+			// hashtable.remove('黎宪桃');
+			// hashtable.remove('高洁');
+			// console.log(hashtable);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- 哈希函数 -->
+		<script>
+			// 设计哈希函数:
+			// 1.将字符串转换成比较大的数(hashCode)
+			// 2.将大的数(hashCode)压缩到数组范围之内
+			function hashFunc(str, size) {
+				// 1定义变量
+				let hashCode = 0;
+				// 2霍纳法则计算hashCode的值
+				for (let i = 0; i < str.length; i++) {
+					// charCodeAt()函数获取到字符串对应的Unicode编码
+					// str.charCodeAt(i);
+					hashCode = 37 * hashCode + str.charCodeAt(i);
+				}
+				// 3取余操作
+				let index = hashCode % size;
+				return index;
+			}
+			// 测试
+			console.log(hashFunc('罗诗韵', 7));
+			console.log(hashFunc('蓝家松', 7));
+			console.log(hashFunc('关欣', 7));
+			console.log(hashFunc('黎宪桃', 7));
+			console.log(hashFunc('李玥', 7));
+			console.log(hashFunc('雷洋婷', 7));
+		</script>
+	</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- 单向链表的封装 -->
+		<script>
+			// 封装链表类
+			function LinkedList() {
+				// 封装内部类:节点类
+				function Node(data) {
+					this.data = data;
+					this.next = null;
+				}
+				// 属性
+				this.head = null;
+				this.length = 0;
+				// 方法
+				// 01.向链表尾部添加一个新的项
+				LinkedList.prototype.append = function (element) {
+					// 1创建新节点
+					let newNode = new Node(element);
+					// 2判断是否添加的是第一个节点
+					if (this.length == 0) {
+						// 是第一个节点
+						// 将head指向这个节点
+						this.head = newNode;
+					} else {
+						// 不是第一个节点
+						// 找到最后一个节点
+						let current = this.head;
+						while (current.next) {
+							current = current.next;
+						}
+						// 让最后一个节点的next指向newNode
+						current.next = newNode;
+					}
+					// 3让length加1
+					this.length += 1;
+				};
+				// 02.向链表的特定位置插入一个新的项
+				LinkedList.prototype.insert = function (position, element) {
+					// 1对position进行越界判断
+					if (position < 0 || position > this.length) return false;
+					// 2创建新节点
+					let newNode = new Node(element);
+					// 3插入新节点
+					if (position == 0) {
+						// 3.1插入第一个节点
+						newNode.next = this.head;
+						this.head = newNode;
+					} else {
+						// 3.1插入除第一个节点之外的其他节点
+						let index = 0;
+						let current = this.head;
+						let previous = null;
+						while (index < position) {
+							previous = current;
+							current = current.next;
+							index += 1;
+						}
+						newNode.next = current;
+						previous.next = newNode;
+					}
+					// 4让length加1
+					this.length += 1;
+					return true;
+				};
+				// 03.获取对应位置的元素
+				LinkedList.prototype.get = function (position) {
+					// 1对position进行越界判断
+					if (position < 0 || position >= this.length) return null;
+					// 2获取对应信息
+					let current = this.head;
+					let index = 0;
+					while (index < position) {
+						current = current.next;
+						index += 1;
+					}
+					return current.data;
+				};
+				// 04.返回元素在链表的索引。如果没有该元素则返回-1
+				LinkedList.prototype.indexOf = function (element) {
+					// 1定义变量
+					let current = this.head;
+					let index = 0;
+					// 2开始查找
+					while (current) {
+						if (current.data == element) {
+							return index;
+							break;
+						}
+						current = current.next;
+						index += 1;
+					}
+					// 3没有找到返回-1
+					return -1;
+				};
+				// 05.修改某个位置的元素
+				LinkedList.prototype.update = function (position, element) {
+					// 1对position进行越界判断
+					if (position < 0 || position >= this.length) return false;
+					// 2查找正确节点
+					let current = this.head;
+					let index = 0;
+					while (index < position) {
+						current = current.next;
+						index += 1;
+					}
+					// 3将position位置的node的data修改为新的数据
+					current.data = element;
+					return true;
+				};
+				// 06.从链表的特定位置移除某一项
+				LinkedList.prototype.removeAt = function (position) {
+					// 1对position进行越界判断
+					if (position < 0 || position >= this.length) return false;
+					// 2查找对应的节点位置
+					// 2.1判断删除节点是否为第一个节点
+					let current = this.head;
+					if (position == 0) {
+						this.head = this.head.next;
+					} else {
+						// 2.2删除节点不是第一个节点
+						let previous = null;
+						let index = 0;
+						// 找到对应节点
+						while (index < position) {
+							previous = current;
+							current = current.next;
+							index += 1;
+						}
+						// 删除对应节点
+						previous.next = current.next;
+					}
+					// 3让length减1
+					this.length -= 1;
+					return current.data;
+				};
+				// 07.从链表中移除一项
+				LinkedList.prototype.remove = function (element) {
+					// 1定义变量
+					let current = this.head;
+					let previous = null;
+					// 2查找对应的节点
+					while (current) {
+						// 判断是否找到节点
+						if (current.data == element) {
+							// 删除对应节点
+							previous.next = current.next;
+							return current.data;
+							break;
+						}
+						previous = current;
+						current = current.next;
+					}
+					// 找不到返回错误
+					return false;
+				};
+				// 08.判断链表是否为空：如果链表中不包含任何元素则返回true，如果链表长度大于0则返回false
+				LinkedList.prototype.isEmpty = function () {
+					return this.length == 0;
+				};
+				// 09.返回链表包含元素的个数，与数组的length类似
+				LinkedList.prototype.size = function () {
+					return this.length;
+				};
+				// 10.将链表中的内容输出为字符串形式：由于链表的项使用了Node类，就需要重写继承自JavaScript对象默认的toString方法，让其只输出元素的值
+				LinkedList.prototype.toString = function () {
+					// 1定义变量
+					let current = this.head;
+					let listString = '';
+					// 2循环获取一个个节点
+					while (current) {
+						listString += current.data + ' ';
+						current = current.next;
+					}
+					return listString;
+				};
+			}
+			// 测试
+			let list = new LinkedList();
+			list.append('罗诗韵');
+			list.append('蓝家松');
+			list.append('雷洋婷');
+			list.append('李玥');
+			list.append('高洁');
+			list.append('张雯竹');
+			alert(list);
+			list.insert(3, '黎宪桃');
+			alert(list);
+			alert(list.get(0));
+			alert(list.indexOf('罗诗韵'));
+			alert(list.indexOf('雷洋婷'));
+			alert(list.indexOf('关欣'));
+			list.insert(5, '梁萧');
+			alert(list);
+			list.update(5, '王恩静');
+			alert(list);
+			alert(list.removeAt(5));
+			alert(list);
+			alert(list.remove('高洁'));
+			alert(list.remove('王恩静'));
+			alert(list);
+		</script>
+	</body>
+</html>
